@@ -1,72 +1,35 @@
-# calculator_cli.py
-import math
+from flask import Flask, render_template, request
 
-def add(a,b): return a+b
-def sub(a,b): return a-b
-def mul(a,b): return a*b
-def div(a,b):
-    if b == 0:
-        raise ZeroDivisionError("Sıfıra bölünemez.")
-    return a/b
-def power(a,b): return a**b
-def sqrt(a):
-    if a < 0:
-        raise ValueError("Negatif sayının karekökü alınamaz (gerçel sonuç).")
-    return math.sqrt(a)
+app = Flask(__name__)
 
-ops = {
-    "1": ("Toplama", add, 2),
-    "2": ("Çıkarma", sub, 2),
-    "3": ("Çarpma", mul, 2),
-    "4": ("Bölme", div, 2),
-    "5": ("Üs (a^b)", power, 2),
-    "6": ("Karekök (√a)", sqrt, 1),
-    "q": ("Çıkış", None, 0)
-}
+def calculate(num1, num2, operation):
+    try:
+        num1 = float(num1)
+        num2 = float(num2)
+        if operation == 'add':
+            return num1 + num2
+        elif operation == 'sub':
+            return num1 - num2
+        elif operation == 'mul':
+            return num1 * num2
+        elif operation == 'div':
+            if num2 == 0:
+                return "Hata: Sıfıra bölme"
+            return num1 / num2
+        else:
+            return "Hatalı işlem"
+    except:
+        return "Hata: Geçersiz giriş"
 
-def main():
-    print("Basit Hesap Makinesi\n")
-    while True:
-        for k,(name,_,n) in ops.items():
-            print(f"{k}: {name}")
-        choice = input("Seçiminiz: ").strip()
-        if choice == "q":
-            print("Çıkılıyor...")
-            break
-        if choice not in ops:
-            print("Geçersiz seçim. Tekrar deneyin.\n")
-            continue
-        _,fn,num_args = ops[choice]
-        try:
-            if num_args == 2:
-                a = float(input("a = "))
-                b = float(input("b = "))
-                result = fn(a,b)
-            elif num_args == 1:
-                a = float(input("a = "))
-                result = fn(a)
-            else:
-                result = None
-            print(f"Sonuç: {result}\n")
-        except Exception as e:
-            print("Hata:", e, "\n")
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    result = None
+    if request.method == 'POST':
+        num1 = request.form.get('num1')
+        num2 = request.form.get('num2')
+        operation = request.form.get('operation')
+        result = calculate(num1, num2, operation)
+    return render_template('index.html', result=result)
 
-if __name__ == "__main__":
-    main()
-def add(a, b):
-    return a + b
-
-def sub(a, b):
-    return a - b
-
-def mul(a, b):
-    return a * b
-
-def div(a, b):
-    return a / b
-
-def power(a, b):
-    return a ** b
-
-def sqrt(a):
-    return a ** 0.5
+if __name__ == '__main__':
+    app.run(debug=True)
