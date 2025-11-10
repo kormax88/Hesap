@@ -1,5 +1,0 @@
-# Bu proje sadece Python standart kütüphanesini kullanıyor.
-# Eğer bir paket yöneticisi ile kurulacaksa, boş bırakılabilir veya Python versiyonu belirtilebilir.
-# requirements.txt
-# Python sürümü için (opsiyonel)
-# python_version >= "3.8"
