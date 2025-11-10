@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hesap Makinesi</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="calculator">
+    <input id="display" type="text" placeholder="İfade girin" autofocus />
+    <div class="buttons">
+      <button data-val="7">7</button>
+      <button data-val="8">8</button>
+      <button data-val="9">9</button>
+      <button data-val="/">÷</button>
+
+      <button data-val="4">4</button>
+      <button data-val="5">5</button>
+      <button data-val="6">6</button>
+      <button data-val="*">×</button>
+
+      <button data-val="1">1</button>
+      <button data-val="2">2</button>
+      <button data-val="3">3</button>
+      <button data-val="-">−</button>
+
+      <button data-val="0">0</button>
+      <button data-val=".">.</button>
+      <button id="clear">C</button>
+      <button data-val="+">+</button>
+
+      <button data-val="(">(</button>
+      <button data-val=")">)</button>
+      <button data-val="%">%</button>
+      <button id="equals" class="equals">=</button>
+    </div>
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    const display = document.getElementById("display");
+    const resultBox = document.getElementById("result");
+
+    document.querySelectorAll("button[data-val]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        display.value += btn.getAttribute("data-val");
+      });
+    });
+
+    document.getElementById("clear").addEventListener("click", () => {
+      display.value = "";
+      resultBox.textContent = "";
+    });
+
+    document.getElementById("equals").addEventListener("click", compute);
+
+    display.addEventListener("keydown", e => {
+      if (e.key === "Enter") compute();
+    });
+
+    function compute() {
+      const expr = display.value.trim();
+      if (!expr) {
+        resultBox.textContent = "İfade boş.";
+        return;
+      }
+
+      resultBox.textContent = "Hesaplanıyor...";
+
+      fetch("/eval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ expr }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.result !== undefined) {
+            resultBox.textContent = data.result;
+          } else {
+            resultBox.textContent = "Hata: " + data.error;
+          }
+        })
+        .catch(() => {
+          resultBox.textContent = "Bağlantı hatası.";
+        });
+    }
+  </script>
+</body>
+</html>
