@@ -1,0 +1,55 @@
+# calculator_cli.py
+import math
+
+def add(a,b): return a+b
+def sub(a,b): return a-b
+def mul(a,b): return a*b
+def div(a,b):
+    if b == 0:
+        raise ZeroDivisionError("Sıfıra bölünemez.")
+    return a/b
+def power(a,b): return a**b
+def sqrt(a):
+    if a < 0:
+        raise ValueError("Negatif sayının karekökü alınamaz (gerçel sonuç).")
+    return math.sqrt(a)
+
+ops = {
+    "1": ("Toplama", add, 2),
+    "2": ("Çıkarma", sub, 2),
+    "3": ("Çarpma", mul, 2),
+    "4": ("Bölme", div, 2),
+    "5": ("Üs (a^b)", power, 2),
+    "6": ("Karekök (√a)", sqrt, 1),
+    "q": ("Çıkış", None, 0)
+}
+
+def main():
+    print("Basit Hesap Makinesi\n")
+    while True:
+        for k,(name,_,n) in ops.items():
+            print(f"{k}: {name}")
+        choice = input("Seçiminiz: ").strip()
+        if choice == "q":
+            print("Çıkılıyor...")
+            break
+        if choice not in ops:
+            print("Geçersiz seçim. Tekrar deneyin.\n")
+            continue
+        _,fn,num_args = ops[choice]
+        try:
+            if num_args == 2:
+                a = float(input("a = "))
+                b = float(input("b = "))
+                result = fn(a,b)
+            elif num_args == 1:
+                a = float(input("a = "))
+                result = fn(a)
+            else:
+                result = None
+            print(f"Sonuç: {result}\n")
+        except Exception as e:
+            print("Hata:", e, "\n")
+
+if __name__ == "__main__":
+    main()
